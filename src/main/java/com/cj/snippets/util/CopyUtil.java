@@ -1,7 +1,7 @@
 package com.cj.snippets.util;
 
 
-import com.cj.snippets.common.enums.ResponseCodeEnum;
+import com.cj.snippets.common.enums.ErrorCode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +21,7 @@ public class CopyUtil {
         try {
             obj = clazz.newInstance(); // 传过来类的实例
         } catch (Exception e) {
-            throw new RuntimeException(ResponseCodeEnum.RC500.getMsg());
+            throw new RuntimeException(ErrorCode.SYSTEM_ERROR.getMsg());
         }
         BeanUtils.copyProperties(source, obj);
         return obj;

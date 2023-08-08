@@ -3,7 +3,8 @@ package com.cj.snippets.aspect;
 
 import com.cj.snippets.annotation.SysLogAnnotation;
 import com.cj.snippets.common.BaseResponse;
-import com.cj.snippets.common.enums.ResponseCodeEnum;
+import com.cj.snippets.common.CustomRequestWrapper;
+import com.cj.snippets.common.enums.ErrorCode;
 import com.cj.snippets.model.entity.SysLog;
 import com.cj.snippets.service.SysLogService;
 import com.cj.snippets.util.IPUtils;
@@ -60,7 +61,8 @@ public class SysLogAspect {
     private void setResponseCode(SysLog sysLog, Object result) {
         // 判断返回体类型是否为BaseResponse
         if (result instanceof BaseResponse) {
-            sysLog.setResponseCode(((BaseResponse<?>) result).getCode());
+            int code = ((BaseResponse<?>) result).getCode();
+            sysLog.setResponseCode(Integer.toString(code));
         }
     }
 
@@ -68,15 +70,8 @@ public class SysLogAspect {
     // 设置请求体
     private void setRequestBody(HttpServletRequest request, SysLog sysLog) throws IOException {
         // ContentCachingRequestWrapper这个类读取请求体
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-        String requestBody = sb.toString();
-
-        sysLog.setBody(requestBody);
+        CustomRequestWrapper customRequestWrapper = new CustomRequestWrapper(request);
+        sysLog.setBody(new String(customRequestWrapper.getBody()));
 
     }
 
@@ -131,9 +126,7 @@ public class SysLogAspect {
         Object result = this.setSpendTime(pjp, sysLog); // 设置消耗时间
         this.setResponseCode(sysLog, result);
 
-        if (sysLog.getResponseCode() != ResponseCodeEnum.RC200.getCode()) {
-            sysLog.setException(((BaseResponse<?>) result).getMsg());
-        }
+        sysLog.setException(((BaseResponse<?>) result).getMsg());
 
         sysLogService.save(sysLog);
 

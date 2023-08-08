@@ -1,12 +1,12 @@
 package com.cj.snippets.common;
 
-import com.cj.snippets.common.enums.ResponseCodeEnum;
+import com.cj.snippets.common.enums.ErrorCode;
 import lombok.Data;
 
 @Data
 public class BaseResponse<T> {
 
-    private String code;
+    private int code;
 
     private String msg;
 
@@ -15,24 +15,29 @@ public class BaseResponse<T> {
 
     public static <T> BaseResponse<T> success() {
         BaseResponse<T> baseResponse = new BaseResponse<>();
-        baseResponse.setCode(ResponseCodeEnum.RC200.getCode());
-        baseResponse.setMsg(ResponseCodeEnum.RC200.getMsg());
+        baseResponse.setCode(ErrorCode.SUCCESS.getCode());
+        baseResponse.setMsg(ErrorCode.SUCCESS.getMsg());
         return baseResponse;
     }
 
 
     public static <T> BaseResponse<T> success(T data) {
         BaseResponse<T> baseResponse = new BaseResponse<>();
-        baseResponse.setCode(ResponseCodeEnum.RC200.getCode());
-        baseResponse.setMsg(ResponseCodeEnum.RC200.getMsg());
+        baseResponse.setCode(ErrorCode.SUCCESS.getCode());
+        baseResponse.setMsg(ErrorCode.SUCCESS.getMsg());
         baseResponse.setData(data);
         return baseResponse;
     }
 
 
+    public static <T> BaseResponse<T> fail(ErrorCode errorCode) {
+        BaseResponse<T> baseResponse = new BaseResponse<>();
+        baseResponse.setCode(errorCode.getCode());
+        baseResponse.setMsg(errorCode.getMsg());
+        return baseResponse;
+    }
 
-
-    public static <T> BaseResponse<T> fail(String code, String msg) {
+    public static <T> BaseResponse<T> fail(int code, String msg) {
         BaseResponse<T> baseResponse = new BaseResponse<>();
         baseResponse.setCode(code);
         baseResponse.setMsg(msg);
