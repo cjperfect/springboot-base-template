@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     // 处理运行时异常
     @ExceptionHandler(RuntimeException.class)
     public BaseResponse<String> RuntimeException(Exception e) {
-        return BaseResponse.fail(ErrorCode.SYSTEM_ERROR.getCode(), e.getMessage());
+        return BaseResponse.fail(ErrorCode.SYSTEM_ERROR);
     }
 
     // 处理请求参数异常
