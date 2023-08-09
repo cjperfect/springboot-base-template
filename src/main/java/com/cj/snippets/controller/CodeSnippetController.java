@@ -1,5 +1,6 @@
 package com.cj.snippets.controller;
 
+import com.cj.snippets.annotation.AuthCheck;
 import com.cj.snippets.annotation.SysLogAnnotation;
 import com.cj.snippets.common.BaseResponse;
 import com.cj.snippets.common.enums.LogTypeEnum;
@@ -31,6 +32,7 @@ public class CodeSnippetController {
     @ApiOperation(value = "查询所有")
     @GetMapping("/getAll")
     @SysLogAnnotation(logType = LogTypeEnum.SELECT)
+    @AuthCheck(role = "admin")
     public BaseResponse<List<CodeSnippetVO>> getAll() {
         List<CodeSnippet> list = codeSnippetService.list();
         List<CodeSnippetVO> codeSnippetVO = CopyUtil.copyList(list, CodeSnippetVO.class);

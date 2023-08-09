@@ -9,7 +9,7 @@ public enum ErrorCode {
     FORBIDDEN_ERROR(40300, "禁止访问"),
     SYSTEM_ERROR(50000, "系统内部异常"),
     OPERATION_ERROR(50001, "操作失败"),
-    NOT_UPDATE(00000, "无需更新");
+    NOT_UPDATE(0, "无需更新");
 
 
     private final int code;

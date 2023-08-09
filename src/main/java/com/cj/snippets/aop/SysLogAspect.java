@@ -1,11 +1,9 @@
-package com.cj.snippets.aspect;
+package com.cj.snippets.aop;
 
 
 import com.cj.snippets.annotation.SysLogAnnotation;
 import com.cj.snippets.common.BaseResponse;
 import com.cj.snippets.common.CustomRequestWrapper;
-import com.cj.snippets.common.enums.ErrorCode;
-import com.cj.snippets.model.entity.SysLog;
 import com.cj.snippets.service.SysLogService;
 import com.cj.snippets.util.IPUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,7 +17,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
@@ -39,7 +36,7 @@ public class SysLogAspect {
 
 
     // 设置接口开始时间和消耗时间
-    private Object setSpendTime(ProceedingJoinPoint pjp, SysLog sysLog) throws Throwable {
+    private Object setSpendTime(ProceedingJoinPoint pjp, com.cj.snippets.model.entity.SysLog sysLog) throws Throwable {
 
         // 记录接口访问时间
         long startTime = System.currentTimeMillis();
@@ -58,7 +55,7 @@ public class SysLogAspect {
     }
 
     // 设置响应状态码
-    private void setResponseCode(SysLog sysLog, Object result) {
+    private void setResponseCode(com.cj.snippets.model.entity.SysLog sysLog, Object result) {
         // 判断返回体类型是否为BaseResponse
         if (result instanceof BaseResponse) {
             int code = ((BaseResponse<?>) result).getCode();
@@ -68,7 +65,7 @@ public class SysLogAspect {
 
 
     // 设置请求体
-    private void setRequestBody(HttpServletRequest request, SysLog sysLog) throws IOException {
+    private void setRequestBody(HttpServletRequest request, com.cj.snippets.model.entity.SysLog sysLog) throws IOException {
         // ContentCachingRequestWrapper这个类读取请求体
         CustomRequestWrapper customRequestWrapper = new CustomRequestWrapper(request);
         sysLog.setBody(new String(customRequestWrapper.getBody()));
@@ -76,10 +73,10 @@ public class SysLogAspect {
     }
 
     // 设置ip地址
-    private void setIpAddress(HttpServletRequest request, SysLog sysLog) throws Exception {
+    private void setIpAddress(HttpServletRequest request, com.cj.snippets.model.entity.SysLog sysLog) throws Exception {
         if (request != null) {
             try {
-                sysLog.setIp(IPUtils.getIpAddr(request));
+                sysLog.setIp(IPUtils.getIpAddress(request));
             } catch (Exception e) {
                 sysLog.setIp(null);
             }
@@ -88,7 +85,7 @@ public class SysLogAspect {
     }
 
     // 设置操作类型
-    private void setLogType(ProceedingJoinPoint pjp, SysLog sysLog) {
+    private void setLogType(ProceedingJoinPoint pjp, com.cj.snippets.model.entity.SysLog sysLog) {
 
         MethodSignature signature = (MethodSignature) pjp.getSignature();
 
@@ -102,11 +99,11 @@ public class SysLogAspect {
     }
 
     // 创建操作日志
-    private SysLog createOperateLog(ProceedingJoinPoint pjp) throws Throwable {
+    private com.cj.snippets.model.entity.SysLog createOperateLog(ProceedingJoinPoint pjp) throws Throwable {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
 
-        SysLog sysLog = new SysLog();
+        com.cj.snippets.model.entity.SysLog sysLog = new com.cj.snippets.model.entity.SysLog();
         sysLog.setQuery(request.getQueryString()); // 设置query参数
 
         this.setRequestBody(request, sysLog); // 设置请求体
@@ -118,11 +115,10 @@ public class SysLogAspect {
         return sysLog;
     }
 
-    //    @Around("execution(public * com.sysLog.project.controller.*.*(..))") // 针对所有controller下面所有方法
     @Around("pointCut()") // 只针对切点的才会执行
     public Object postLogAspect(ProceedingJoinPoint pjp) throws Throwable {
 
-        SysLog sysLog = this.createOperateLog(pjp); // 创建一个操作日志
+        com.cj.snippets.model.entity.SysLog sysLog = this.createOperateLog(pjp); // 创建一个操作日志
         Object result = this.setSpendTime(pjp, sysLog); // 设置消耗时间
         this.setResponseCode(sysLog, result);
 
