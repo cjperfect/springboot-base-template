@@ -2,6 +2,7 @@ package com.cj.snippets.exception;
 
 import com.cj.snippets.common.BaseResponse;
 import com.cj.snippets.common.enums.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,19 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     // 处理业务异常
     @ExceptionHandler(BusinessException.class)
     public BaseResponse<String> BusinessException(BusinessException e) {
-        System.out.println(e.getCode() + e.getMessage());
+        log.error("businessException---", e);
         return BaseResponse.fail(e.getCode(), e.getMessage());
     }
 
     // 处理运行时异常
     @ExceptionHandler(RuntimeException.class)
     public BaseResponse<String> RuntimeException(RuntimeException e) {
-
-        return BaseResponse.success(e.getMessage());
+        log.error("runtimeException---", e);
+        return BaseResponse.fail(ErrorCode.SYSTEM_ERROR);
     }
 
     // 处理请求参数异常
