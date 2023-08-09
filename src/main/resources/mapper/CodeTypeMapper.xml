@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cj.snippets.mapper.CodeTypeMapper">
+
+    <sql id="baseColumns">
+        `id`
+        , `type_name`, `p_id`, `create_time`, `update_time`, `user_id`
+    </sql>
+
+    <resultMap id="typeResultMap" type="com.cj.snippets.model.vo.CodeTypeVO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="typeName" column="type_name"/>
+        <result property="pId" column="p_id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!--级联查询-->
+        <collection property="children" column="id" select="selectByPid"
+                    ofType="com.cj.snippets.model.vo.CodeTypeVO" javaType="java.util.ArrayList"></collection>
+    </resultMap>
+
+
+    <select id="selectByPid" resultType="com.cj.snippets.model.vo.CodeTypeVO">
+        select
+        <include refid="baseColumns"></include>
+        from code_type
+        where p_id = #{id}
+    </select>
+
+    <select id="getAll" resultMap="typeResultMap">
+        select
+        <include refid="baseColumns"></include>
+        from code_type
+        where p_id = 0
+    </select>
+</mapper>
